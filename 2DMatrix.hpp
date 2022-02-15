@@ -1,7 +1,9 @@
 #pragma once
 
+/* Basic includes */
 #include <vector>
 #include <iostream>
+#include <cassert>
 
 template <typename T>
 class Matrix
@@ -25,7 +27,7 @@ public:
     T& operator()(unsigned int y, unsigned int x);
     T& operator()(unsigned int y);
 
-    Matrix<T>& operator=(const Matrix<T>& other);
+    Matrix<T>& operator=(Matrix<T>& other);
     Matrix<T> operator+(const Matrix<T>& other);
     Matrix<T> operator-(const Matrix<T>& other);
     Matrix<T> operator*(const Matrix<T>& other);
@@ -37,7 +39,7 @@ public:
     Matrix<T> operator/(const T& scalar);
 
     template<typename O>
-        friend ostream& operator<<(ostream& out, const Matrix<O>& m);
+        friend std::ostream& operator<<(std::ostream& out, Matrix<O>& m);
 };
 
 
@@ -98,9 +100,9 @@ T& Matrix<T>::operator()(unsigned int x)
 /* Matrix Operation */
 
 template<typename T>
-Matrix<T>& Matrix<T>::operator=(const Matrix<T>& other)
+Matrix<T>& Matrix<T>::operator=(Matrix<T>& other)
 {
-    if (other == *this)
+    if (&other == this)
         return *this;
     
     this->_height = other._height;
@@ -109,9 +111,9 @@ Matrix<T>& Matrix<T>::operator=(const Matrix<T>& other)
     this->_data.resize(this->_height * this->_width);
 
     for (unsigned int i = 0; i < this->_height * this->_width; ++i)
-        this->_data(i) = other._data(i);
+        this->_data(i) = other(i);
 
-    return *this
+    return *this;
 }
 
 template<typename T>
@@ -124,9 +126,7 @@ Matrix<T> Matrix<T>::operator+(const Matrix<T>& other)
             throw "ERROR: Attempting to add two matrices of different size";
 
         for (unsigned int i = 0; i < this->_height * this->_width ; ++i)
-            result(i) = other(i) + *this(i);
-
-        return;
+            result(i) = other(i) + this->_data[i];
     }
     catch(const std::exception& e)
     {
@@ -136,7 +136,7 @@ Matrix<T> Matrix<T>::operator+(const Matrix<T>& other)
 }
 
 template<typename T>
-Matrix<T> Matrix<T>::operator-(const Matrix<T>& matrix)
+Matrix<T> Matrix<T>::operator-(const Matrix<T>& other)
 {
     Matrix<T> result(this->_height, this->_width);
     try
@@ -145,9 +145,7 @@ Matrix<T> Matrix<T>::operator-(const Matrix<T>& matrix)
             throw "ERROR: Attempting to substrate two matrices of different size";
 
         for (unsigned int i = 0; i < this->_height * this->_width ; ++i)
-            result(i) = *this(i) - other(i);
-
-        return;
+            result(i) = _data[i] - other(i);
     }
     catch(const std::exception& e)
     {
@@ -168,12 +166,10 @@ Matrix<T> Matrix<T>::operator*(const Matrix<T>& other)
         for (unsigned int k = 0; k < this->_height; ++k) {
             for (unsigned int i = 0; i < this->_width; ++i) {
                 for (unsigned int j = 0; j < other._height; ++j) {
-                    result(i) += (*this(i) * other(k))
+                    result(i) += (*this(i) * other(k));
                 }
             }
         }
-
-        return;
     }
     catch(const std::exception& e)
     {
@@ -183,7 +179,7 @@ Matrix<T> Matrix<T>::operator*(const Matrix<T>& other)
 }
 
 template<typename T>
-Matrix<T> Matrix<T>::operator/(const Matrix<T>& matrix)
+Matrix<T> Matrix<T>::operator/(const Matrix<T>& other)
 {
     Matrix<T> result(this->_height, this->_width);
     try
@@ -192,8 +188,6 @@ Matrix<T> Matrix<T>::operator/(const Matrix<T>& matrix)
             throw "ERROR: Attempting to divide two matrices of different size";
 
         //TODO
-
-        return;
     }
     catch(const std::exception& e)
     {
@@ -207,11 +201,11 @@ Matrix<T> Matrix<T>::operator/(const Matrix<T>& matrix)
 template<typename T>
 Matrix<T> Matrix<T>::operator+(const T& scalar)
 {
-    Matrix<T> result(this->_height, this->_data);
+    Matrix<T> result(this->_height, this->_width);
 
     for(unsigned int i = 0; i < this->_height * this->_width; ++i)
     {
-        result(i) = this->_data(i) + scalar;
+        result(i) = this->_data[i] + scalar;
     }
     return result;
 }
@@ -219,11 +213,11 @@ Matrix<T> Matrix<T>::operator+(const T& scalar)
 template<typename T>
 Matrix<T> Matrix<T>::operator-(const T& scalar)
 {
-    Matrix<T> result(this->_height, this->_data);
+    Matrix<T> result(this->_height, this->_width);
 
     for(unsigned int i = 0; i < this->_height * this->_width; ++i)
     {
-        result(i) = this->_data(i) - scalar;
+        result(i) = this->_data[i] - scalar;
     }
     return result;
 }
@@ -231,11 +225,11 @@ Matrix<T> Matrix<T>::operator-(const T& scalar)
 template<typename T>
 Matrix<T> Matrix<T>::operator*(const T& scalar)
 {
-    Matrix<T> result(this->_height, this->_data);
+    Matrix<T> result(this->_height, this->_width);
 
     for(unsigned int i = 0; i < this->_height * this->_width; ++i)
     {
-        result(i) = this->_data(i) * scalar;
+        result(i) = this->_data[i] * scalar;
     }
     return result;
 }
@@ -243,24 +237,23 @@ Matrix<T> Matrix<T>::operator*(const T& scalar)
 template<typename T>
 Matrix<T> Matrix<T>::operator/(const T& scalar)
 {
-    Matrix<T> result(this->_height, this->_data);
+    Matrix<T> result(this->_height, this->_width);
 
     for(unsigned int i = 0; i < this->_height * this->_width; ++i)
     {
-        result(i) = this->_data(i) / scalar;
+        result(i) = this->_data[i] / scalar;
     }
     return result;
 }
 
 // Print Matrix data
 template<typename O>
-std::ostream& operator<<(std::ostream& out, const Matrix<O>& m) {
-    for(unsigned int i = 0; i < m._height * m._width; ++i)
+std::ostream& operator<<(std::ostream& out, Matrix<O>& m) {
+    for(unsigned int i = 0; i < m.height() * m.width(); ++i)
     {
-        out << m._data(i) << " ";
-        if (i != 0 && i % m._width == 0)
-            out << endl;
+        if (i != 0 && i % m.width() == 0) 
+            out << std::endl;
+        out << m(i) << " ";
     }
-    out << endl;
     return out;
 }
