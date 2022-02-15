@@ -28,10 +28,10 @@ public:
     T& operator()(unsigned int y);
 
     Matrix<T>& operator=(Matrix<T>& other);
-    Matrix<T> operator+(const Matrix<T>& other);
-    Matrix<T> operator-(const Matrix<T>& other);
-    Matrix<T> operator*(const Matrix<T>& other);
-    Matrix<T> operator/(const Matrix<T>& other);
+    Matrix<T> operator+(Matrix<T>& other);
+    Matrix<T> operator-(Matrix<T>& other);
+    Matrix<T> operator*(Matrix<T>& other);
+    Matrix<T> operator/(Matrix<T>& other);
 
     Matrix<T> operator+(const T& scalar);
     Matrix<T> operator-(const T& scalar);
@@ -117,7 +117,7 @@ Matrix<T>& Matrix<T>::operator=(Matrix<T>& other)
 }
 
 template<typename T>
-Matrix<T> Matrix<T>::operator+(const Matrix<T>& other)
+Matrix<T> Matrix<T>::operator+(Matrix<T>& other)
 {
     Matrix<T> result(this->_height, this->_width);
     try
@@ -136,7 +136,7 @@ Matrix<T> Matrix<T>::operator+(const Matrix<T>& other)
 }
 
 template<typename T>
-Matrix<T> Matrix<T>::operator-(const Matrix<T>& other)
+Matrix<T> Matrix<T>::operator-(Matrix<T>& other)
 {
     Matrix<T> result(this->_height, this->_width);
     try
@@ -155,18 +155,20 @@ Matrix<T> Matrix<T>::operator-(const Matrix<T>& other)
 }
 
 template<typename T>
-Matrix<T> Matrix<T>::operator*(const Matrix<T>& other)
+Matrix<T> Matrix<T>::operator*(Matrix<T>& other)
 {
     Matrix<T> result(this->_height, other._width, 0);
     try
     {
-        if (this->_height * this->_width != other._width * other._width)
+        if (this->_height * this->_width != other._width * other._height)
             throw "ERROR: Attempting to multiply two matrices of different size";
 
-        for (unsigned int k = 0; k < this->_height; ++k) {
-            for (unsigned int i = 0; i < this->_width; ++i) {
-                for (unsigned int j = 0; j < other._height; ++j) {
-                    result(i) += (*this(i) * other(k));
+        for (unsigned int i = 0; i < this->_height; ++i)
+        {
+            for (unsigned int j = 0; j < other._width; ++j)
+            {
+                for (unsigned int k = 0; k < this->_width; ++k) {
+                    result(i, j) += this->operator()(i, k) * other(k, j);
                 }
             }
         }
@@ -179,15 +181,23 @@ Matrix<T> Matrix<T>::operator*(const Matrix<T>& other)
 }
 
 template<typename T>
-Matrix<T> Matrix<T>::operator/(const Matrix<T>& other)
+Matrix<T> Matrix<T>::operator/(Matrix<T>& other)
 {
-    Matrix<T> result(this->_height, this->_width);
+    Matrix<T> result(this->_height, other._width, 0);
     try
     {
-        if (this->_height * this->_width != other._width * other._width)
+        if (this->_height * this->_width != other._width * other._height)
             throw "ERROR: Attempting to divide two matrices of different size";
 
-        //TODO
+        for (unsigned int i = 0; i < this->_height; ++i)
+        {
+            for (unsigned int j = 0; j < other._width; ++j)
+            {
+                for (unsigned int k = 0; k < this->_width; ++k) {
+                    result(i, j) += this->operator()(i, k) / other(k, j);
+                }
+            }
+        }
     }
     catch(const std::exception& e)
     {

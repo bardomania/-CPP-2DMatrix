@@ -33,5 +33,30 @@ int main(int argc, char const *argv[])
     std::cout << div << std::endl;
     std::cout << std::endl;
 
+    /* Matrix add */ 
+    Matrix<double> m_add = (matrix + add);
+    std::cout << m_add << std::endl;
+    std::cout << std::endl;
+
+    /* Matrix sub */ 
+    Matrix<double> m_sub = (matrix - sub);
+    std::cout << m_sub << std::endl;
+    std::cout << std::endl;
+
+    /* Matrix mult */
+    Matrix<double> m1 = Matrix<double>(1, 3, 1);
+    m1(0) = 1;
+    m1(1) = 2;
+    m1(2) = 3;
+
+    Matrix<double> m2 = Matrix<double>(3, 1, 1);
+    m2(0) = 4;
+    m2(1) = 5;
+    m2(2) = 6;
+
+    Matrix<double> result = m1 * m2;
+    std::cout << result << std::endl;
+    std::cout << std::endl;
+
     return 0;
 }
