@@ -13,16 +13,6 @@ int main(int argc, char const *argv[])
     std::cout << matrix << std::endl;
     std::cout << std::endl;
 
-    /* Scalar Add */
-    Matrix<double> add = (matrix + 1);
-    std::cout << add << std::endl;
-    std::cout << std::endl;
-
-    /* Scalar sub */ 
-    Matrix<double> sub = (matrix - 1);
-    std::cout << sub << std::endl;
-    std::cout << std::endl;
-
     /* Scalar mult */ 
     Matrix<double> mult = (matrix * 2);
     std::cout << mult << std::endl;
@@ -34,13 +24,8 @@ int main(int argc, char const *argv[])
     std::cout << std::endl;
 
     /* Matrix add */ 
-    Matrix<double> m_add = (matrix + add);
+    Matrix<double> m_add = (matrix + matrix);
     std::cout << m_add << std::endl;
-    std::cout << std::endl;
-
-    /* Matrix sub */ 
-    Matrix<double> m_sub = (matrix - sub);
-    std::cout << m_sub << std::endl;
     std::cout << std::endl;
 
     /* Matrix mult */
@@ -54,6 +39,13 @@ int main(int argc, char const *argv[])
     m2(1) = 5;
     m2(2) = 6;
 
+
+    /*
+                 [4]
+    [1][2][3] *  [5] = 32
+                 [6]
+
+    */
     Matrix<double> result = m1 * m2;
     std::cout << result << std::endl;
     std::cout << std::endl;
