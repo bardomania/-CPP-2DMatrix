@@ -1,6 +1,6 @@
 # CPP-2DMatrix
 
-Matrix lib that can contain any types of argument, with 
+2D-Matrix lib that can contain any types of argument using template.
 
 # Overloaded operator for now
 
